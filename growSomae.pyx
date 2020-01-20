@@ -27,16 +27,16 @@ def growSomae(prefix, output_folder, query_ID, block_z_start, block_y_start, blo
         for by in (block_y_start, block_y_end+1):
             for bx in (block_x_start, block_x_end+1):
 
-                labels_in = fileName = dataIO.InputlabelsDirectory(prefix)+"/"+prefix+"/Zebrafinch-labels_discarded_filled_padded-"+str(block_z).zfill(4)+"z-"+str(block_y).zfill(4)+"y-"+str(block_x).zfill(4)+"x"+".h5"
+                labels_in = fileName = dataIO.InputlabelsDirectory(prefix)+"/"+prefix+"/Zebrafinch-labels_discarded_filled_padded-"+str(bz).zfill(4)+"z-"+str(by).zfill(4)+"y-"+str(bx).zfill(4)+"x"+".h5"
                 data = dataIO.ReadH5File(fileName)
-                point_list = getPointList(labels_in, blocksize, bz, by, bx, query_ID)
+                point_list = dataIO.getPointList(labels_in, dataIO.Blocksize(prefix), bz, by, bx, query_ID)
                 index_list = [index_list, point_list]
 
                 print(len(index_list))
                 del point_list
 
 
-    # get blocksize
+'''    # get blocksize
     cdef np.ndarray[long, ndim=1, mode='c'] cpp_blocksize = np.ascontiguousarray(dataIO.Blocksize(prefix), dtype=ctypes.c_int64)
     # get volumesize
     cdef np.ndarray[long, ndim=1, mode='c'] cpp_volumesize = np.ascontiguousarray(dataIO.Volumesize(prefix), dtype=ctypes.c_int64)
@@ -48,3 +48,4 @@ def growSomae(prefix, output_folder, query_ID, block_z_start, block_y_start, blo
     cdef np.ndarray[long, ndim=1, mode='c'] cpp_block_ind_end = np.ascontiguousarray(np.array([block_z_end, block_y_end, block_x_end]), dtype=ctypes.c_int64)
 
     CppSkeletonRefinement(prefix.encode('utf-8'), &(cpp_resolution[0]), &(cpp_blocksize[0]), &(cpp_volumesize[0]), &(cpp_block_ind_begin[0]), &(cpp_block_ind_end[0]), output_folder.encode('utf-8'))
+'''

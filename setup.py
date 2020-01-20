@@ -4,15 +4,15 @@ import numpy as np
 
 extensions = [
     Extension(
-        name='wiring',
+        name='growSomae',
         include_dirs=[np.get_include()],
-        sources=['wiring.pyx', 'cpp-growSomae.cpp'],
+        sources=['growSomae.pyx'],
         extra_compile_args=['-O4', '-std=c++0x'],
         language='c++'
     )
 ]
 
 setup(
-    name='wiring',
+    name='growSomae',
     ext_modules=cythonize(extensions)
 )
