@@ -9,43 +9,73 @@ import numpy as np
 
 import dataIO
 
-# cdef extern from 'cpp-wiring.h':
-#     void CPPcreateDataBlock(const char *prefix, const char *lookup_table_directory, long *inp_labels, long *inp_somae, float input_resolution[3],
-#             long inp_blocksize[3], long volume_size[3], long block_ind_inp[3], long block_ind_start_inp[3], long block_ind_end_inp[3],
-#             const char* synapses_dir, const char* somae_dir, const char* output_dir);
-#     void CppSkeletonRefinement(const char *prefix, float input_resolution[3], long inp_blocksize[3], long volume_size[3], long block_ind_begin[3],
-#             long block_ind_end[3], const char* output_dir);
-#     void ComputeAnchorPoints(const char *prefix, const char* output_dir, long inp_blocksize_inp[3], long blockind_inp[3], long block_ind_start_inp[3], long block_ind_end_inp[3],
-#             long volumesize_in_inp[3], long *z_min_wall, long *z_max_wall, long *y_min_wall, long *y_max_wall, long *x_min_wall, long *x_max_wall);
-# save walls
-
-def growSomae(prefix, output_folder, query_ID, block_z_start, block_y_start, block_x_start, block_z_end, block_y_end, block_x_end):
-
-    index_list = []
-
-    for bz in (block_z_start, block_z_end+1):
-        for by in (block_y_start, block_y_end+1):
-            for bx in (block_x_start, block_x_end+1):
-
-                labels_in = fileName = dataIO.InputlabelsDirectory(prefix)+"/"+prefix+"/Zebrafinch-labels_discarded_filled_padded-"+str(bz).zfill(4)+"z-"+str(by).zfill(4)+"y-"+str(bx).zfill(4)+"x"+".h5"
-                data = dataIO.ReadH5File(fileName)
-                point_list = dataIO.getPointList(labels_in, dataIO.Blocksize(prefix), bz, by, bx, query_ID)
-                index_list = [index_list, point_list]
-
-                print(len(index_list))
-                del point_list
+cdef extern from 'cpp-growSomae.h':
+    void CppGetcomponentFromPointlist(const char *prefix, long *inp_indices, long *inp_indices_somae, long n_indices, long n_indices_somae, long query_ID, long inp_blocksize[3], long volume_size[3]);
 
 
-'''    # get blocksize
+def growFromPoint(prefix, output_folder, query_ID, block_z_start, block_y_start, block_x_start, block_z_end, block_y_end, block_x_end):
+
+    print("----------------------------------------")
+    print("Query ID is: " + str(query_ID))
+
+    # index_list = []
+    # index_list_somae = []
+
+    # for bz in range(block_z_start, block_z_end+1):
+    #     print("bz is: " + str(bz))
+    #     for by in range(block_y_start, block_y_end+1):
+    #         for bx in range(block_x_start, block_x_end+1):
+
+
+                # # read in segmentation
+                # fileName = dataIO.InputlabelsDirectory(prefix)+"/Zebrafinch-input_labels-"+str(bz).zfill(4)+"z-"+str(by).zfill(4)+"y-"+str(bx).zfill(4)+"x"+".h5"
+                # labels_in = dataIO.ReadH5File(fileName)
+                # dsp_factor = 1
+                # point_list = dataIO.getPointList(labels_in, dataIO.Blocksize(prefix), dataIO.Volumesize(prefix), bz, by, bx, query_ID, dsp_factor)
+                # index_list = index_list + point_listprint("len point list somae: " + str(len(point_list)))
+                # print("len point list: " + str(len(point_list)))
+                # print("len index list: " + str(len(index_list)))
+                # del point_list
+
+                # # read in somae
+                # fileNamesomae = dataIO.SomaeDirectory(prefix)+"/" + prefix + "/Zebrafinch-somae_refined_dsp8-"+str(bz).zfill(4)+"z-"+str(by).zfill(4)+"y-"+str(bx).zfill(4)+"x.h5"
+                # labels_in_somae = dataIO.ReadH5File(fileNamesomae)
+                # dsp_factor = 8
+                # point_list_somae = dataIO.getPointList(labels_in_somae, dataIO.Blocksize(prefix), dataIO.Volumesize(prefix), bz, by, bx, query_ID, dsp_factor)
+                # index_list_somae = index_list_somae + point_list_somae
+                #
+                # print("len point list somae: " + str(len(point_list_somae)))
+                # print("len index list somae: " + str(len(index_list_somae)))
+                #
+                # del point_list_somae
+
+    # g = open("pointlist_"+str(query_ID)+".txt", "w+")
+    # for entry in index_list:
+    #     g.write(str(int(entry)).zfill(25)+"\n")
+    # g.close()
+
+    # g = open("pointlist_somae_"+str(query_ID)+".txt", "w+")
+    # for entry in index_list_somae:
+    #     g.write(str(int(entry)).zfill(25)+"\n")
+    # g.close()
+
+    cdef long cpp_query_ID = query_ID
+
+    index_table = np.genfromtxt("pointlist_" + str(query_ID) + ".txt", delimiter=',',invalid_raise=True)
+    print(index_table.shape)
+
+    cdef np.ndarray[long, ndim=1, mode='c'] cpp_index_table = np.ascontiguousarray(index_table, dtype=ctypes.c_int64)
+    cdef long cpp_n_indices = len(index_table)
+
+    index_table_somae = np.genfromtxt("pointlist_somae_" + str(query_ID) + ".txt", delimiter=',',invalid_raise=True)
+    print(index_table_somae.shape)
+
+    cdef np.ndarray[long, ndim=1, mode='c'] cpp_index_table_somae = np.ascontiguousarray(index_table_somae, dtype=ctypes.c_int64)
+    cdef long cpp_n_indices_somae = len(index_table_somae)
+
+    # get blocksize
     cdef np.ndarray[long, ndim=1, mode='c'] cpp_blocksize = np.ascontiguousarray(dataIO.Blocksize(prefix), dtype=ctypes.c_int64)
     # get volumesize
     cdef np.ndarray[long, ndim=1, mode='c'] cpp_volumesize = np.ascontiguousarray(dataIO.Volumesize(prefix), dtype=ctypes.c_int64)
-    # get Resolution from meta file
-    cdef np.ndarray[float, ndim=1, mode='c'] cpp_resolution = np.ascontiguousarray(dataIO.Resolution(prefix)).astype(np.float32)
-    # get block indices (start)
-    cdef np.ndarray[long, ndim=1, mode='c'] cpp_block_ind_begin = np.ascontiguousarray(np.array([block_z_start, block_y_start, block_x_start]), dtype=ctypes.c_int64)
-    # get block indices (end)
-    cdef np.ndarray[long, ndim=1, mode='c'] cpp_block_ind_end = np.ascontiguousarray(np.array([block_z_end, block_y_end, block_x_end]), dtype=ctypes.c_int64)
 
-    CppSkeletonRefinement(prefix.encode('utf-8'), &(cpp_resolution[0]), &(cpp_blocksize[0]), &(cpp_volumesize[0]), &(cpp_block_ind_begin[0]), &(cpp_block_ind_end[0]), output_folder.encode('utf-8'))
-'''
+    CppGetcomponentFromPointlist(prefix.encode('utf-8'), &(cpp_index_table[0]), &(cpp_index_table_somae[0]), cpp_n_indices, cpp_n_indices_somae, cpp_query_ID, &(cpp_blocksize[0]), &(cpp_volumesize[0]))

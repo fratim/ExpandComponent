@@ -1,6 +1,6 @@
 import sys
 
-from skeletons.utilities.constants import *
+from constants import *
 
 
 class MetaData:

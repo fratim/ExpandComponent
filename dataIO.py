@@ -4,6 +4,7 @@ import struct
 
 
 import numpy as np
+from numba import njit
 #from PIL import Image
 
 
@@ -110,21 +111,22 @@ def ReadWidths(prefix, label):
     # return the dictionary of widths for each skeleton point
     return widths
 
-def getPointList(labels_in, blocksize, bz, by, bx, query_ID):
+@njit
+def getPointList(labels_in, blocksize, volumesize,  bz, by, bx, query_ID, dsp_factor):
 
     iv_list = []
 
-    for iz in labels_in.shape[0]:
-        for iy in labels_in.shape[1]:
-            for ix in labels_in.shape[2]:
+    for iz in range(labels_in.shape[0]):
+        for iy in range(labels_in.shape[1]):
+            for ix in range(labels_in.shape[2]):
 
                 if labels_in[iz,iy,ix]!=query_ID: continue
 
-                iz_global = iz + bz*blocksize[0]
-                iy_global = iy + by*blocksize[1]
-                ix_global = ix + bx*blocksize[2]
+                iz_global = iz*dsp_factor + bz*blocksize[0]
+                iy_global = iy*dsp_factor + by*blocksize[1]
+                ix_global = ix*dsp_factor + bx*blocksize[2]
 
-                iv_global = iz_global * blocksize[2]*blocksize[1] + iy *blocksize[2]  + ix
+                iv_global = iz_global * volumesize[2]*volumesize[1] + iy_global *volumesize[2]  + ix_global
 
                 iv_list.append(iv_global)
 
