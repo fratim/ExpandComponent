@@ -1,7 +1,7 @@
 segmentation_dsp8/
 *.txt
 *.pts
-*.so
+build*
 
 # Prerequisites
 *.d
