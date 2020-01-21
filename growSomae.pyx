@@ -1,3 +1,4 @@
+
 import os
 import time
 
@@ -45,15 +46,15 @@ def growFromPoint(prefix, query_ID, block_z_start, block_y_start, block_x_start,
     print("len index list: " + str(len(index_list)))
     print("len index list somae: " + str(len(index_list_somae)))
 
-    g = open("pointlists_out/pointlist_"+str(query_ID)+".txt", "w+")
-    for entry in index_list:
-        g.write(str(int(entry)).zfill(25)+"\n")
-    g.close()
-
-    g = open("pointlists_out/pointlist_somae_"+str(query_ID)+".txt", "w+")
-    for entry in index_list_somae:
-        g.write(str(int(entry)).zfill(25)+"\n")
-    g.close()
+    # g = open("pointlists_out/pointlist_"+str(query_ID)+".txt", "w+")
+    # for entry in index_list:
+    #     g.write(str(int(entry)).zfill(25)+"\n")
+    # g.close()
+    #
+    # g = open("pointlists_out/pointlist_somae_"+str(query_ID)+".txt", "w+")
+    # for entry in index_list_somae:
+    #     g.write(str(int(entry)).zfill(25)+"\n")
+    # g.close()
 
     if len(index_list)==0 or len(index_list_somae)==0:
         index_list = [0]
@@ -62,15 +63,15 @@ def growFromPoint(prefix, query_ID, block_z_start, block_y_start, block_x_start,
 
     cdef long cpp_query_ID = query_ID
 
-    # index_table = np.genfromtxt("pointlist_" + str(query_ID) + ".txt", delimiter=',',invalid_raise=True)
-    index_table = np.asarray(index_list)
+    index_table = np.genfromtxt("pointlist_" + str(query_ID) + ".txt", delimiter=',',invalid_raise=True)
+    # index_table = np.asarray(index_list)
     print(index_table.shape)
 
     cdef np.ndarray[long, ndim=1, mode='c'] cpp_index_table = np.ascontiguousarray(index_table, dtype=ctypes.c_int64)
     cdef long cpp_n_indices = len(index_table)
 
-    # index_table_somae = np.genfromtxt("pointlist_somae_" + str(query_ID) + ".txt", delimiter=',',invalid_raise=True)
-    index_table_somae = np.asarray(index_list_somae)
+    index_table_somae = np.genfromtxt("pointlist_somae_" + str(query_ID) + ".txt", delimiter=',',invalid_raise=True)
+    # index_table_somae = np.asarray(index_list_somae)
     print(index_table_somae.shape)
 
     cdef np.ndarray[long, ndim=1, mode='c'] cpp_index_table_somae = np.ascontiguousarray(index_table_somae, dtype=ctypes.c_int64)

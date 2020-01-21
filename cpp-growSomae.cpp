@@ -65,7 +65,7 @@ void WritePointsOfSegment(const char *prefix, std::unordered_set<long> &points, 
       long global_iy = 0;
       long global_ix = 0;
 
-      IndexToIndices(up_iv_global, global_ix, global_iy, global_ix, global_sheet_size, global_row_size);
+      IndexToIndices(up_iv_global, global_ix, global_iy, global_iz, global_sheet_size, global_row_size);
 
       long zblock = floor((double)global_iz / (double)input_blocksize[OR_Z]);
       long yblock = floor((double)global_iy / (double)input_blocksize[OR_Y]);
@@ -102,7 +102,7 @@ void WritePointsOfSegment(const char *prefix, std::unordered_set<long> &points, 
         if (!wfp) { fprintf(stderr, "Failed to open %s\n", output_filename); exit(-1); }
 
         long n_points = global_points_block[bz][by][bx].size();
-        long n_points_compare = global_points_block[bz][by][bx].size();
+        long n_points_compare = local_points_block[bz][by][bx].size();
 
         if (n_points!=n_points_compare) {
           fprintf(stderr, "Failed unkown.\n");
@@ -114,11 +114,15 @@ void WritePointsOfSegment(const char *prefix, std::unordered_set<long> &points, 
 
         std::unordered_set<long>::iterator it;
 
+        long n_written_global = 0;
+        long n_written_local = 0;
+
         for (it = global_points_block[bz][by][bx].begin(); it != global_points_block[bz][by][bx].end(); ++it){
 
           long up_iv_global = *it;
           if (fwrite(&up_iv_global, sizeof(long), 1, wfp) != 1) { fprintf(stderr, "Failed to write to %s\n", output_filename); exit(-1); }
           checksum += up_iv_global;
+          n_written_global++;
 
         }
 
@@ -127,8 +131,14 @@ void WritePointsOfSegment(const char *prefix, std::unordered_set<long> &points, 
           long up_iv_local = *it;
           if (fwrite(&up_iv_local, sizeof(long), 1, wfp) != 1) { fprintf(stderr, "Failed to write to %s\n", output_filename); exit(-1); }
           checksum += up_iv_local;
+          n_written_local++;
 
         }
+
+        std::cout << "written global: " << n_written_global << std::endl;
+        std::cout << "written local: " << n_written_local << std::endl;
+        std::cout << "n_points: " << n_points << std::endl;
+
 
         if (fwrite(&checksum, sizeof(long), 1, wfp) != 1) { fprintf(stderr, "Failed to write to %s\n", output_filename); exit(-1); }
         fclose(wfp);
@@ -136,7 +146,6 @@ void WritePointsOfSegment(const char *prefix, std::unordered_set<long> &points, 
       }
     }
   }
-
 }
 
 void WriteSurfacePoints(const char *prefix, std::unordered_set<long> &points, long &query_ID, long input_blocksize[3], long volumesize[3])

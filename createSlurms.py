@@ -86,7 +86,7 @@ step01folderpath = SLURM_OUTPUT_FOLDER+"step01/"
 makeFolder(step01folderpath)
 
 # write slurm for step two
-for ID in range(410):
+for ID in range(1,410):
 
             command = "execute.py" + " " + str(ID)
             jobname = "S1"+"_" +"ID_"+str(ID).zfill(6)

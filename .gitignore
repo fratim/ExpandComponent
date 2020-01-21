@@ -7,9 +7,10 @@ slurms*
 # Prerequisites
 *.d
 growsomae.cpython*
-
+blocks_out*
+output*
 stat_output
-
+build/*
 # Compiled Object files
 *.slo
 *.lo
