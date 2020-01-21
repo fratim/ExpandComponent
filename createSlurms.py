@@ -23,7 +23,7 @@ module load cuda/9.0-fasrc02 cudnn/7.1_cuda9.0-fasrc01
 
 source activate fillholes
 
-export PYTHONPATH=$PYTHONPATH:/n/home12/tfranzmeyer/Code/
+export PYTHONPATH=$PYTHONPATH:/n/pfister_lab2/Lab/tfranzmeyer/ExpandComponent/
 
 cd {RUNCODEDIRECTORY}
 
@@ -67,14 +67,14 @@ else:
         n_part +=1
 
 files_written = 0
-code_run_path = "/n/home12/tfranzmeyer/Code/ExpandComponent/"
+code_run_path = "/n/pfister_lab2/Lab/tfranzmeyer/ExpandComponent/"
 run_hours = "4"
-slurm_path = "/n/home12/tfranzmeyer/Code/ExpandComponent/slurms/"
+slurm_path = "/n/pfister_lab2/Lab/tfranzmeyer/ExpandComponent/slurms/"
 
 prefix = "Zebrafinch"
 
-error_path = "/n/home12/tfranzmeyer/Code/ExpandComponent/error_files/"
-output_path = "/n/home12/tfranzmeyer/Code/ExpandComponent/output_files/"
+error_path = "/n/pfister_lab2/Lab/tfranzmeyer/ExpandComponent/error_files/"
+output_path = "/n/pfister_lab2/Lab/tfranzmeyer/ExpandComponent/output_files/"
 template = template.replace('{RUNCODEDIRECTORY}', code_run_path)
 template = template.replace('{HOURS}', run_hours)
 memory = str(40000)
