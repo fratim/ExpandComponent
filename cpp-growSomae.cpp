@@ -33,29 +33,110 @@ void WriteHeaderSegID(FILE *fp, long &num, long &segID, long input_blocksize[3],
 void WritePointsOfSegment(const char *prefix, std::unordered_set<long> &points, long &query_ID, long input_blocksize[3], long volumesize[3])
 {
 
-  // create an output file for the points
-  char output_filename[4096];
-  // sprintf(output_filename, "%s/segment_pontlist/%s/%s-segment_pointlist.pts", output_directory, prefix, prefix);
-  sprintf(output_filename, "%s-segment_pointlist.pts", prefix);
+  std::unordered_map<long,std::unordered_map<long,std::unordered_map<long, std::unordered_set<long>>>> global_points_block = std::unordered_map<long,std::unordered_map<long,std::unordered_map<long, std::unordered_set<long>>>>();
+  std::unordered_map<long,std::unordered_map<long,std::unordered_map<long, std::unordered_set<long>>>> local_points_block = std::unordered_map<long,std::unordered_map<long,std::unordered_map<long, std::unordered_set<long>>>>();
 
-  FILE *wfp = fopen(output_filename, "wb");
-  if (!wfp) { fprintf(stderr, "Failed to open %s\n", output_filename); exit(-1); }
+  long global_sheet_size = volumesize[OR_Y]*volumesize[OR_X];
+  long global_row_size = volumesize[OR_X];
 
-  long n_points = points.size();
+  {
+    // create an output file for the points
+    char output_filename[4096];
+    // sprintf(output_filename, "%s/segment_pontlist/%s/%s-segment_pointlist.pts", output_directory, prefix, prefix);
+    sprintf(output_filename, "segments_out/%s-segment-%06ld.pts", prefix, query_ID);
 
-  // write the characteristics header
-  WriteHeaderSegID(wfp, n_points, query_ID, input_blocksize, volumesize);
-  long checksum = 0;
+    FILE *wfp = fopen(output_filename, "wb");
+    if (!wfp) { fprintf(stderr, "Failed to open %s\n", output_filename); exit(-1); }
 
-  for (std::unordered_set<long>::iterator itr = points.begin(); itr!=points.end(); ++itr){
+    long n_points = points.size();
 
-    long up_iv_global = *itr;
-    if (fwrite(&up_iv_global, sizeof(long), 1, wfp) != 1) { fprintf(stderr, "Failed to write to %s\n", output_filename); exit(-1); }
-    checksum += up_iv_global;
+    // write the characteristics header
+    WriteHeaderSegID(wfp, n_points, query_ID, input_blocksize, volumesize);
+    long checksum = 0;
+
+    for (std::unordered_set<long>::iterator itr = points.begin(); itr!=points.end(); ++itr){
+
+      long up_iv_global = *itr;
+      if (fwrite(&up_iv_global, sizeof(long), 1, wfp) != 1) { fprintf(stderr, "Failed to write to %s\n", output_filename); exit(-1); }
+      checksum += up_iv_global;
+
+      // write points to maps
+      long global_iz = 0;
+      long global_iy = 0;
+      long global_ix = 0;
+
+      IndexToIndices(up_iv_global, global_ix, global_iy, global_ix, global_sheet_size, global_row_size);
+
+      long zblock = floor((double)global_iz / (double)input_blocksize[OR_Z]);
+      long yblock = floor((double)global_iy / (double)input_blocksize[OR_Y]);
+      long xblock = floor((double)global_ix / (double)input_blocksize[OR_X]);
+
+      long local_iz = global_iz - (input_blocksize[OR_Z]*zblock);
+      long local_iy = global_iy - (input_blocksize[OR_Y]*yblock);
+      long local_ix = global_ix - (input_blocksize[OR_X]*xblock);
+
+      long local_iv = local_iz * input_blocksize[OR_Y] * input_blocksize[OR_X] + local_iy * input_blocksize[OR_X] + local_ix;
+
+      global_points_block[zblock][yblock][xblock].insert(up_iv_global);
+      local_points_block[zblock][yblock][xblock].insert(local_iv);
+
+    }
+
+    if (fwrite(&checksum, sizeof(long), 1, wfp) != 1) { fprintf(stderr, "Failed to write to %s\n", output_filename); exit(-1); }
+    fclose(wfp);
   }
 
-  if (fwrite(&checksum, sizeof(long), 1, wfp) != 1) { fprintf(stderr, "Failed to write to %s\n", output_filename); exit(-1); }
-  fclose(wfp);
+  long n_blocks_z = floor((double)volumesize[OR_Z] / (double)input_blocksize[OR_Z]);
+  long n_blocks_y = floor((double)volumesize[OR_Y] / (double)input_blocksize[OR_Y]);
+  long n_blocks_x = floor((double)volumesize[OR_X] / (double)input_blocksize[OR_X]);
+
+  for (long bz=0; bz<n_blocks_z; bz++){
+    for (long by=0; by<n_blocks_y; by++){
+      for (long bx=0; bx<n_blocks_x; bx++){
+
+        char output_filename[4096];
+        // sprintf(output_filename, "%s/segment_pontlist/%s/%s-segment_pointlist.pts", output_directory, prefix, prefix);
+        sprintf(output_filename, "segments_out/%s-segment-%06ld-%04ldz-%04ldy-%04ldx.pts", prefix, query_ID, bz, by, bx);
+
+        FILE *wfp = fopen(output_filename, "wb");
+        if (!wfp) { fprintf(stderr, "Failed to open %s\n", output_filename); exit(-1); }
+
+        long n_points = global_points_block[bz][by][bx].size();
+        long n_points_compare = global_points_block[bz][by][bx].size();
+
+        if (n_points!=n_points_compare) {
+          fprintf(stderr, "Failed unkown.\n");
+        }
+
+        // write the characteristics header
+        WriteHeaderSegID(wfp, n_points, query_ID, input_blocksize, volumesize);
+        long checksum = 0;
+
+        std::unordered_set<long>::iterator it;
+
+        for (it = global_points_block[bz][by][bx].begin(); it != global_points_block[bz][by][bx].end(); ++it){
+
+          long up_iv_global = *it;
+          if (fwrite(&up_iv_global, sizeof(long), 1, wfp) != 1) { fprintf(stderr, "Failed to write to %s\n", output_filename); exit(-1); }
+          checksum += up_iv_global;
+
+        }
+
+        for (it = local_points_block[bz][by][bx].begin(); it != local_points_block[bz][by][bx].end(); ++it){
+
+          long up_iv_local = *it;
+          if (fwrite(&up_iv_local, sizeof(long), 1, wfp) != 1) { fprintf(stderr, "Failed to write to %s\n", output_filename); exit(-1); }
+          checksum += up_iv_local;
+
+        }
+
+        if (fwrite(&checksum, sizeof(long), 1, wfp) != 1) { fprintf(stderr, "Failed to write to %s\n", output_filename); exit(-1); }
+        fclose(wfp);
+
+      }
+    }
+  }
+
 }
 
 void WriteSurfacePoints(const char *prefix, std::unordered_set<long> &points, long &query_ID, long input_blocksize[3], long volumesize[3])
@@ -64,7 +145,7 @@ void WriteSurfacePoints(const char *prefix, std::unordered_set<long> &points, lo
   // create an output file for the points
   char output_filename[4096];
   // sprintf(output_filename, "%s/segment_pontlist/%s/%s-segment_pointlist.pts", output_directory, prefix, prefix);
-  sprintf(output_filename, "%s-surface_pointlist.pts", prefix);
+  sprintf(output_filename, "surfaces_out/%s-surface-%06ld.pts", prefix, query_ID);
 
   FILE *wfp = fopen(output_filename, "wb");
   if (!wfp) { fprintf(stderr, "Failed to open %s\n", output_filename); exit(-1); }
@@ -80,6 +161,7 @@ void WriteSurfacePoints(const char *prefix, std::unordered_set<long> &points, lo
     long up_iv_global = *itr;
     if (fwrite(&up_iv_global, sizeof(long), 1, wfp) != 1) { fprintf(stderr, "Failed to write to %s\n", output_filename); exit(-1); }
     checksum += up_iv_global;
+
   }
 
   if (fwrite(&checksum, sizeof(long), 1, wfp) != 1) { fprintf(stderr, "Failed to write to %s\n", output_filename); exit(-1); }
