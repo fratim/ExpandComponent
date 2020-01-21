@@ -22,12 +22,17 @@ growSomae.growFromPoint(  prefix, query_comp, start_blocks[0],start_blocks[1],st
 print("time component " + str(query_comp) + ": " + str(time.time()-start_time))
 
 # reassemble blocks
+<<<<<<< HEAD
+=======
+
+>>>>>>> f61e2ec99da4389dccef869818646c383f3851bf
 for bz in (start_blocks[0], start_blocks[0]+n_blocks[0]):
     for by in (start_blocks[1], start_blocks[1]+n_blocks[1]):
         for bx in (start_blocks[2], start_blocks[2]+n_blocks[2]):
 
             print("Block: " + str((bz,by,bx)))
 
+<<<<<<< HEAD
             blocksize = dataIO.Blocksize(prefix)
             sheet_size = blocksize[1]*blocksize[2]
             row_size = blocksize[2]
@@ -83,3 +88,15 @@ for bz in (start_blocks[0], start_blocks[0]+n_blocks[0]):
 
             filename_out = "Zebrafinch-labels_discarded-"+str(bz).zfill(4)+"z-"+str(by).zfill(4)+"y-"+str(bx).zfill(4)+"x"+".h5"
             dataIO.WriteH5File(labels_out, output_directory+filename_out, "main")
+=======
+            input_directory = "segments_out/"
+
+            # get the grid size for this prefix
+            zres, yres, xres = dataIO.GridSize(prefix)
+
+            point_cloud = set(dataIO.ReadPoints(prefix, label, 'segmentations'))
+
+            surface_points = FindSurface(point_cloud, zres, yres, xres)
+
+            surface_filename = 'surfaces/{}/{:06d}.pts'.format(prefix, label)
+>>>>>>> f61e2ec99da4389dccef869818646c383f3851bf

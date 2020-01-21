@@ -2,9 +2,11 @@ segmentation_dsp8/
 *.txt
 *.pts
 build*
-
+error_files*
+slurms*
 # Prerequisites
 *.d
+growsomae.cpython*
 
 stat_output
 
