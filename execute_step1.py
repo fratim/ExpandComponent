@@ -11,7 +11,7 @@ import struct
 
 prefix = 'Zebrafinch'
 
-pass arguments
+# pass arguments
 if(len(sys.argv))!=2:
     raise ValueError(" ERROR")
 else:
