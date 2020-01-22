@@ -115,7 +115,7 @@ for bz in range(start_blocks[0], start_blocks[0]+n_blocks[0]):
         for bx in range(start_blocks[2], start_blocks[2]+n_blocks[2]):
 
             command = "execute_step2.py" + " " + str(ID)
-            jobname = "S2"+"_" +"ID_"+str(ID).zfill(6)
+            jobname = "S2"+"_"+"z"+str(bz).zfill(2)+"y"+str(by).zfill(2)+"x"+str(bx).zfill(2)
 
             t = template
             t = t.replace('{JOBNAME}', jobname)
