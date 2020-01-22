@@ -23,7 +23,7 @@ module load cuda/9.0-fasrc02 cudnn/7.1_cuda9.0-fasrc01
 
 source activate fillholes
 
-export PYTHONPATH=$PYTHONPATH:/n/pfister_lab2/Lab/tfranzmeyer/ExpandComponent/
+export PYTHONPATH=$PYTHONPATH:/n/home12/tfranzmeyer/Code/
 
 cd {RUNCODEDIRECTORY}
 
@@ -67,14 +67,15 @@ else:
         n_part +=1
 
 files_written = 0
-code_run_path = "/n/pfister_lab2/Lab/tfranzmeyer/ExpandComponent/"
+code_run_path = "/n/home12/tfranzmeyer/Code/ExpandComponent/"
 run_hours = "4"
-slurm_path = "/n/pfister_lab2/Lab/tfranzmeyer/ExpandComponent/slurms/"
+slurm_path = "/n/home12/tfranzmeyer/Code/ExpandComponent/slurms/"
 
 prefix = "Zebrafinch"
+ID_MAX = 410
 
-error_path = "/n/pfister_lab2/Lab/tfranzmeyer/ExpandComponent/error_files/"
-output_path = "/n/pfister_lab2/Lab/tfranzmeyer/ExpandComponent/output_files/"
+error_path = "/n/home12/tfranzmeyer/Code/ExpandComponent/error_files/"
+output_path = "/n/home12/tfranzmeyer/Code/ExpandComponent/output_files/"
 template = template.replace('{RUNCODEDIRECTORY}', code_run_path)
 template = template.replace('{HOURS}', run_hours)
 memory = str(40000)
@@ -82,14 +83,39 @@ memory = str(40000)
 SLURM_OUTPUT_FOLDER = slurm_path
 
 step01folderpath = SLURM_OUTPUT_FOLDER+"step01/"
+step02folderpath = SLURM_OUTPUT_FOLDER+"step02/"
 
 makeFolder(step01folderpath)
+makeFolder(step02folderpath)
 
 # write slurm for step two
-for ID in range(1,410):
+for ID in range(1,ID_MAX):
+    command = "execute_step1.py" + " " + str(ID)
+    jobname = "S1"+"_" +"ID_"+str(ID).zfill(6)
 
-            command = "execute.py" + " " + str(ID)
-            jobname = "S1"+"_" +"ID_"+str(ID).zfill(6)
+    t = template
+    t = t.replace('{JOBNAME}', jobname)
+    t = t.replace('{COMMAND}', command)
+    t = t.replace('{ERROR_PATH}', error_path)
+    t = t.replace('{OUTPUT_PATH}', output_path)
+    t = t.replace('{MEMORY}', memory)
+    t = t.replace('{PARTITION}', partitions[np.random.randint(0,n_part)])
+
+    filename = step01folderpath + jobname + ".slurm"
+    writeFile(filename, t)
+    files_written += 1
+
+
+start_blocks = dataIO.StartBlocks(prefix)
+n_blocks = dataIO.NBlocks(prefix)
+
+# reassemble blocks
+for bz in range(start_blocks[0], start_blocks[0]+n_blocks[0]):
+    for by in range(start_blocks[1], start_blocks[1]+n_blocks[1]):
+        for bx in range(start_blocks[2], start_blocks[2]+n_blocks[2]):
+
+            command = "execute_step2.py" + " " + str(ID)
+            jobname = "S2"+"_" +"ID_"+str(ID).zfill(6)
 
             t = template
             t = t.replace('{JOBNAME}', jobname)
@@ -99,8 +125,18 @@ for ID in range(1,410):
             t = t.replace('{MEMORY}', memory)
             t = t.replace('{PARTITION}', partitions[np.random.randint(0,n_part)])
 
-            filename = step01folderpath + jobname + ".slurm"
+            filename = step02folderpath + jobname + ".slurm"
             writeFile(filename, t)
             files_written += 1
+
+
+
+
+
+
+
+
+
+
 
 print ("Files written: " + str(files_written))
