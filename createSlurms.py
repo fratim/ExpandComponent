@@ -119,7 +119,7 @@ for bz in range(start_blocks[0], start_blocks[0]+n_blocks[0]):
     for by in range(start_blocks[1], start_blocks[1]+n_blocks[1]):
         for bx in range(start_blocks[2], start_blocks[2]+n_blocks[2]):
 
-            command = "execute_step2.py" + " " + str(ID)
+            command = "execute_step2.py" + " " + str(bz) + " " + str(by) + " " + str(bx)
             jobname = "S2"+"_"+"z"+str(bz).zfill(2)+"y"+str(by).zfill(2)+"x"+str(bx).zfill(2)
 
             t = template

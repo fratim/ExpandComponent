@@ -50,9 +50,6 @@ for fname in filenames:
     if by_read != by: continue
     if bx_read != bx: continue
 
-    # print("Block indices read: " + str((bz_read, by_read, bx_read)))
-    # print("ID read: " + str(ID_in_fname))
-
     blocksize_read = [-1,-1,-1]
     volumesize_read = [-1,-1,-1]
     ID_read = -1
@@ -77,15 +74,25 @@ for fname in filenames:
         points_global = set(point_cloud_global)
         points_local = set(point_cloud_local)
 
-        assert(checksum_read[0]==(sum(points_local)+sum(points_global)))
+        # if checksum_read[0]!=(sum(points_local)+sum(points_global)):
+        #     print("ID is: " + str(ID_in_fname))
+        #     print("checksum read is: " + str(checksum_read[0]))
+        #     print("sum local is: " + str(sum(points_local)))
+        #     print("sum global is: " + str(sum(points_global)))
+        #     print("sum both is: "+ str((sum(points_local)+sum(points_global))))
+        #
+        #     raise ValueError("Checksum wrong")
 
         del points_global
         del point_cloud_global
 
     n_points_block+=n_points
 
-    for index in points_local:
+    if len(points_local)>0:
+        print("Block indices read: " + str((bz_read, by_read, bx_read)))
+        print("ID read: " + str(ID_in_fname))
 
+    for index in points_local:
         iz = index // sheet_size
         iy = (index - iz * sheet_size) // row_size
         ix = index % row_size
