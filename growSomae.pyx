@@ -23,7 +23,6 @@ def growFromPoint(prefix, query_ID, block_z_start, block_y_start, block_x_start,
     index_list_somae = []
 
     if prefix =="Zebrafinch":
-
         for bz in range(block_z_start, block_z_end+1):
             print("bz is: " + str(bz))
             for by in range(block_y_start, block_y_end+1):
@@ -46,22 +45,26 @@ def growFromPoint(prefix, query_ID, block_z_start, block_y_start, block_x_start,
                     del point_list_somae
 
     if prefix == "JWR":
+        for bz in range(block_z_start, block_z_end+1):
+            print("bz is: " + str(bz))
+            for by in range(block_y_start, block_y_end+1):
+                for bx in range(block_x_start, block_x_end+1):
 
-        # read in segmentation
-        fileName = dataIO.InputlabelsDirectory(prefix)+"/cell"+str(query_ID)+"_d.h5"
-        labels_in = dataIO.ReadH5File(fileName)
-        dsp_factor = 1
-        point_list = dataIO.getPointList(labels_in, dataIO.Blocksize(prefix), dataIO.Volumesize(prefix), 0, 0, 0, query_ID, dsp_factor)
-        index_list = index_list + point_list
-        del point_list
+                    # read in segmentation
+                    fileName = dataIO.InputlabelsDirectory(prefix)+"/JWR-"+str(bz).zfill(4)+"z-"+str(by).zfill(4)+"y-"+str(bx).zfill(4)+"x"+".h5"
+                    labels_in = dataIO.ReadH5File(fileName)
+                    dsp_factor = 1
+                    point_list = dataIO.getPointList(labels_in, dataIO.Blocksize(prefix), dataIO.Volumesize(prefix), bz, by, bx, query_ID, dsp_factor)
+                    index_list = index_list + point_list
+                    del point_list
 
-        # read in somae
-        fileNamesomae = dataIO.SomaeDirectory(prefix)+"/" + prefix + "/somae_JWR_773x832x832.h5"
-        labels_in_somae = dataIO.ReadH5File(fileNamesomae)
-        dsp_factor = 1
-        point_list_somae = dataIO.getPointList(labels_in_somae, dataIO.Blocksize(prefix), dataIO.Volumesize(prefix), 0, 0, 0, query_ID, dsp_factor)
-        index_list_somae = index_list_somae + point_list_somae
-        del point_list_somae
+                    # read in somae
+                    fileNamesomae = dataIO.SomaeDirectory(prefix)+"/" + prefix + "/JWR-somae_filled_refined_dsp4-"+str(bz).zfill(4)+"z-"+str(by).zfill(4)+"y-"+str(bx).zfill(4)+"x.h5"
+                    labels_in_somae = dataIO.ReadH5File(fileNamesomae)
+                    dsp_factor = 4
+                    point_list_somae = dataIO.getPointList(labels_in_somae, dataIO.Blocksize(prefix), dataIO.Volumesize(prefix), bz, by, bx, query_ID, dsp_factor)
+                    index_list_somae = index_list_somae + point_list_somae
+                    del point_list_somae
 
 
     print("len index list: " + str(len(index_list)))

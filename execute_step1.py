@@ -9,7 +9,7 @@ import numpy as np
 import re
 import struct
 
-prefix = 'Zebrafinch'
+prefix = 'JWR'
 
 # pass arguments
 if(len(sys.argv))!=2:

@@ -9,7 +9,7 @@ import numpy as np
 import re
 import struct
 
-prefix = 'Zebrafinch'
+prefix = 'JWR'
 
 if(len(sys.argv))!=4:
     raise ValueError(" Scripts needs exactley 3 input arguments (bz, vy, bx)")
