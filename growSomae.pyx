@@ -82,8 +82,8 @@ def growFromPoint(prefix, query_ID, block_z_start, block_y_start, block_x_start,
 
     if len(index_list)==0 or len(index_list_somae)==0:
         print("ERROR")
-        print("len index list segment: " + len(index_list))
-        print("len index list somae: " + len(index_list_somae))
+        print("len index list segment: " + str(len(index_list)))
+        print("len index list somae: " + str(len(index_list_somae)))
         raise ValueError("Either list is empty - aborting")
 
     cdef long cpp_query_ID = query_ID
