@@ -148,13 +148,13 @@ void WritePointsOfSegment(const char *prefix, std::unordered_set<long> &points, 
   }
 }
 
-void WriteSurfacePoints(const char *prefix, std::unordered_set<long> &points, long &query_ID, long input_blocksize[3], long volumesize[3])
+void WriteSurfacePoints(const char *prefix, const char *identifier, std::unordered_set<long> &points, long &query_ID, long input_blocksize[3], long volumesize[3])
 {
 
   // create an output file for the points
   char output_filename[4096];
   // sprintf(output_filename, "%s/segment_pontlist/%s/%s-segment_pointlist.pts", output_directory, prefix, prefix);
-  sprintf(output_filename, "surfaces_out/%s-surface-%06ld.pts", prefix, query_ID);
+  sprintf(output_filename, "%s_out/%s-surface-%06ld.pts", identifier, prefix, query_ID);
 
   FILE *wfp = fopen(output_filename, "wb");
   if (!wfp) { fprintf(stderr, "Failed to open %s\n", output_filename); exit(-1); }
@@ -194,20 +194,77 @@ void CppGetcomponentFromPointlist(const char *prefix, long *inp_indices, long *i
   // create a set of vertices that are connected
   std::unordered_set<long> visited = std::unordered_set<long>();
   std::unordered_set<long> surface_voxels = std::unordered_set<long>();
+  std::unordered_set<long> somae_surface_voxels = std::unordered_set<long>();
+  std::unordered_set<long> somae_input_voxels = std::unordered_set<long>();
 
 
   std::cout << "Total somae points: " << n_indices_somae << std::endl;
 
   long somae_points_correct = 0;
 
+  // add all correct somae voxels to the voxels list
   for (long i=0; i<n_indices_somae; i++){
 
+    // somae input voxels is a set that holds all input somae indices
+    somae_input_voxels.insert(inp_indices_somae[i]);
+
+    // somae indices that are also listed as a segment are now added to the initial voxel list
     if (segment.find(inp_indices_somae[i]) == segment.end()) continue;
 
     voxels.push(inp_indices_somae[i]);
     somae_points_correct++;
+
   }
 
+  // add all somae surface voxels to the according sets
+  long n_surfacePoints_somae = 0;
+
+  for (long i=0; i<n_indices_somae; i++){
+
+
+    long sheet_size = volume_size[OR_Y]*volume_size[OR_X];
+    long row_size = volume_size[OR_X];
+
+    long ix, iy, iz;
+    IndexToIndices(inp_indices_somae[i], ix, iy, iz, sheet_size, row_size);
+
+    bool isSurface = 0;
+
+    for (long iw = iz - 1; iw <= iz + 1; ++iw) {
+      if (iw < 0 or iw >= volume_size[OR_Z]) continue;
+      for (long iv = iy - 1; iv <= iy + 1; ++iv) {
+        if (iv < 0 or iv >= volume_size[OR_Y]) continue;
+        for (long iu = ix - 1; iu <= ix + 1; ++iu) {
+          if (iu < 0 or iu >= volume_size[OR_X]) continue;
+
+          long neighbor = IndicesToIndex(iu, iv, iw, sheet_size, row_size);
+
+          // if equal, continue
+          if (neighbor == inp_indices_somae[i]) continue;
+
+          // skip background voxels
+          if (somae_input_voxels.find(neighbor) == somae_input_voxels.end()) {
+            // check is is 6-connected neighbor, if so, this is a surface voxel
+
+            if ((iw!=iz && iv==iy && iu==ix)||(iw==iz && iv!=iy && iu==ix)||(iw==iz && iv==iy && iu!=ix)){
+              isSurface = 1;
+              n_surfacePoints_somae++;
+            }
+
+            continue;
+          }
+
+        }
+      }
+    }
+
+    if (isSurface) somae_surface_voxels.insert(voxel);
+
+  }
+
+  const char *id = "somae_surfaces";
+  WriteSurfacePoints(prefix, id, somae_surface_voxels, query_ID, inp_blocksize, volume_size);
+  std::cout << "Found Somae surface points: " << n_surfacePoints_somae << std::endl;
   std::cout << "Inserted correct somae points: " << somae_points_correct << std::endl;
 
   long sheet_size = volume_size[OR_Y]*volume_size[OR_X];
@@ -274,7 +331,8 @@ void CppGetcomponentFromPointlist(const char *prefix, long *inp_indices, long *i
 
   std::cout << "Writing surface points to File: " << surface_voxels.size() << std::endl;
 
-  WriteSurfacePoints(prefix, surface_voxels, query_ID, inp_blocksize, volume_size);
+  const char *id2 = "surfaces";
+  WriteSurfacePoints(prefix, id, surface_voxels, query_ID, inp_blocksize, volume_size);
 
 
 
