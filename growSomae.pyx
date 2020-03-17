@@ -50,7 +50,8 @@ def growFromPoint(prefix, query_ID, block_z_start, block_y_start, block_x_start,
 
 
     if prefix == "JWR":
-        for bz in range(block_z_start, block_z_end+1):
+        # for bz in range(block_z_start, block_z_end+1):
+        for bz in [0,1]:
             print("bz is: " + str(bz))
             for by in range(block_y_start, block_y_end+1):
                 for bx in range(block_x_start, block_x_end+1):
