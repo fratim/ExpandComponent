@@ -18,7 +18,7 @@ else:
     by = int(sys.argv[2])
     bx = int(sys.argv[3])
 
-print("bz by bx: " + str((bz,by,bx))
+print("bz by bx: " + str((bz,by,bx)))
 
 n_points_block = 0
 
