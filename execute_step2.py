@@ -12,11 +12,13 @@ import struct
 prefix = 'JWR'
 
 if(len(sys.argv))!=4:
-    raise ValueError(" Scripts needs exactley 3 input arguments (bz, vy, bx)")
+    raise ValueError(" Scripts needs exactley 3 input arguments (bz, by, bx)")
 else:
     bz = int(sys.argv[1])
     by = int(sys.argv[2])
     bx = int(sys.argv[3])
+
+print("bz by bx: " + str((bz,by,bx))
 
 n_points_block = 0
 
@@ -49,6 +51,8 @@ for fname in filenames:
     if bz_read != bz: continue
     if by_read != by: continue
     if bx_read != bx: continue
+
+    print("reading: " + str(fname))
 
     blocksize_read = [-1,-1,-1]
     volumesize_read = [-1,-1,-1]
