@@ -258,7 +258,7 @@ void CppGetcomponentFromPointlist(const char *prefix, long *inp_indices, long *i
       }
     }
 
-    if (isSurface) somae_surface_voxels.insert(voxel);
+    if (isSurface) somae_surface_voxels.insert(inp_indices_somae[i]);
 
   }
 
@@ -332,7 +332,7 @@ void CppGetcomponentFromPointlist(const char *prefix, long *inp_indices, long *i
   std::cout << "Writing surface points to File: " << surface_voxels.size() << std::endl;
 
   const char *id2 = "surfaces";
-  WriteSurfacePoints(prefix, id, surface_voxels, query_ID, inp_blocksize, volume_size);
+  WriteSurfacePoints(prefix, id2, surface_voxels, query_ID, inp_blocksize, volume_size);
 
 
 
