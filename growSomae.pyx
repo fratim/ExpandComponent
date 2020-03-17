@@ -44,6 +44,10 @@ def growFromPoint(prefix, query_ID, block_z_start, block_y_start, block_x_start,
                     index_list_somae = index_list_somae + point_list_somae
                     del point_list_somae
 
+                    print("len index list: " + str(len(index_list)))
+                    print("len index list somae: " + str(len(index_list_somae)))
+
+
     if prefix == "JWR":
         for bz in range(block_z_start, block_z_end+1):
             print("bz is: " + str(bz))
@@ -66,9 +70,8 @@ def growFromPoint(prefix, query_ID, block_z_start, block_y_start, block_x_start,
                     index_list_somae = index_list_somae + point_list_somae
                     del point_list_somae
 
-
-    print("len index list: " + str(len(index_list)))
-    print("len index list somae: " + str(len(index_list_somae)))
+                    print("len index list: " + str(len(index_list)))
+                    print("len index list somae: " + str(len(index_list_somae)))
 
     # g = open("pointlists_out/pointlist_"+str(query_ID)+".txt", "w+")
     # for entry in index_list:
