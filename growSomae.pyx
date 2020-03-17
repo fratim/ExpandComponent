@@ -18,6 +18,7 @@ def growFromPoint(prefix, query_ID, block_z_start, block_y_start, block_x_start,
 
     print("----------------------------------------")
     print("Query ID is: " + str(query_ID))
+    print("Prefix is: " + prefix)
 
     index_list = []
     index_list_somae = []
@@ -55,6 +56,8 @@ def growFromPoint(prefix, query_ID, block_z_start, block_y_start, block_x_start,
                 for bx in range(block_x_start, block_x_end+1):
 
                     # read in segmentation
+
+                    print("reading labels from: " )
                     fileName = dataIO.InputlabelsDirectory(prefix)+"/JWR-"+str(bz).zfill(4)+"z-"+str(by).zfill(4)+"y-"+str(bx).zfill(4)+"x"+".h5"
                     labels_in = dataIO.ReadH5File(fileName)
                     dsp_factor = 1
