@@ -33,12 +33,6 @@ echo "DONE"
 
 '''
 
-
-'''JWR IDS: [100, 101, 103, 10, 111, 113, 114, 121, 122, 124, 126, 127, 128, 130, 131, 132, 134, 13, 17, 19, 21,
- 22, 24, 2, 32, 36, 37, 39, 46, 47, 48, 53, 54, 63, 64, 67, 68, 69, 70, 71, 72, 74, 75, 76, 7, 81, 82, 84, 85, 86, 91, 96, 98, 99, 136, 78, 6, 33, 135,
- 65, 105, 94, 16, 12, 9, 20, 23, 29, 30, 31, 35, 90, 41, 55, 59, 83, 34, 27, 56, 92, 97, 104, 43, 44, 42, 45, 87, 108, 93, 88, 26]'''
-
-
 def makeFolder(folder_path):
     if os.path.exists(folder_path):
         raise ValueError("Folderpath " + folder_path + " already exists!")
@@ -133,15 +127,5 @@ for bz in range(start_blocks[0], start_blocks[0]+n_blocks[0]):
             filename = step02folderpath + jobname + ".slurm"
             writeFile(filename, t)
             files_written += 1
-
-
-
-
-
-
-
-
-
-
 
 print ("Files written: " + str(files_written))
