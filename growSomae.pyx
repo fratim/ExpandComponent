@@ -76,16 +76,6 @@ def growFromPoint(prefix, query_ID, block_z_start, block_y_start, block_x_start,
                     print("len index list: " + str(len(index_list)))
                     print("len index list somae: " + str(len(index_list_somae)))
 
-    # g = open("pointlists_out/pointlist_"+str(query_ID)+".txt", "w+")
-    # for entry in index_list:
-    #     g.write(str(int(entry)).zfill(25)+"\n")
-    # g.close()
-    #
-    # g = open("pointlists_out/pointlist_somae_"+str(query_ID)+".txt", "w+")
-    # for entry in index_list_somae:
-    #     g.write(str(int(entry)).zfill(25)+"\n")
-    # g.close()
-
     if len(index_list)==0 or len(index_list_somae)==0:
         print("ERROR")
         print("len index list segment: " + str(len(index_list)))
