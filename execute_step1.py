@@ -21,6 +21,9 @@ start_blocks = dataIO.StartBlocks(prefix)
 n_blocks = dataIO.NBlocks(prefix)
 
 start_time = time.time()
+
+print("zmax,ymax,xmx: {},{},{}".format(n_blocks[0]-1,n_blocks[1]-1,n_blocks[2]-1))
+
 growSomae.growFromPoint(  prefix, query_comp, start_blocks[0],start_blocks[1],start_blocks[2],
                     start_blocks[0]+n_blocks[0]-1,start_blocks[1]+n_blocks[1]-1,start_blocks[2]+n_blocks[2]-1)
 print("time component " + str(query_comp) + ": " + str(time.time()-start_time))

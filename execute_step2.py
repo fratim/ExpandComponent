@@ -105,5 +105,5 @@ for fname in filenames:
 
 print("n_points for block: " + str(n_points_block))
 
-filename_out = "Zebrafinch-labels_discarded-"+str(bz).zfill(4)+"z-"+str(by).zfill(4)+"y-"+str(bx).zfill(4)+"x"+".h5"
+filename_out = "JWR-labels_discarded-"+str(bz).zfill(4)+"z-"+str(by).zfill(4)+"y-"+str(bx).zfill(4)+"x"+".h5"
 dataIO.WriteH5File(labels_out, output_directory+filename_out, "main")

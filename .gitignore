@@ -16,10 +16,11 @@ build/*
 *.lo
 *.o
 *.obj
-
+*downsample*
 # Precompiled Headers
 *.gch
 *.pch
+volume_dsp_out/*
 
 # Compiled Dynamic libraries
 *.so

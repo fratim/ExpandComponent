@@ -66,7 +66,7 @@ def growFromPoint(prefix, query_ID, block_z_start, block_y_start, block_x_start,
                     del point_list
 
                     # read in somae
-                    fileNamesomae = dataIO.SomaeDirectory(prefix)+"/" + prefix + "/JWR-somae_filled_refined_dsp4-"+str(bz).zfill(4)+"z-"+str(by).zfill(4)+"y-"+str(bx).zfill(4)+"x.h5"
+                    fileNamesomae = dataIO.SomaeDirectory(prefix)+"/" + prefix + "/"+str(bz).zfill(4)+"z-"+str(by).zfill(4)+"y-"+str(bx).zfill(4)+"x.h5"
                     labels_in_somae = dataIO.ReadH5File(fileNamesomae)
                     dsp_factor = 4
                     point_list_somae = dataIO.getPointList(labels_in_somae, dataIO.Blocksize(prefix), dataIO.Volumesize(prefix), bz, by, bx, query_ID, dsp_factor)

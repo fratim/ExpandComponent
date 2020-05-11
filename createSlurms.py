@@ -23,7 +23,7 @@ module load cuda/9.0-fasrc02 cudnn/7.1_cuda9.0-fasrc01
 
 source activate fillholes
 
-export PYTHONPATH=$PYTHONPATH:/n/pfister_lab2/Lab/tfranzmeyer/ExpandComponent/
+export PYTHONPATH=$PYTHONPATH:/n/pfister_lab2/Lab/tfranzmeyer/JWR_raw/ExpandComponent/
 
 cd {RUNCODEDIRECTORY}
 
@@ -34,10 +34,7 @@ echo "DONE"
 '''
 
 
-'''JWR IDS: [100, 101, 103, 10, 111, 113, 114, 121, 122, 124, 126, 127, 128, 130, 131, 132, 134, 13, 17, 19, 21,
- 22, 24, 2, 32, 36, 37, 39, 46, 47, 48, 53, 54, 63, 64, 67, 68, 69, 70, 71, 72, 74, 75, 76, 7, 81, 82, 84, 85, 86, 91, 96, 98, 99, 136, 78, 6, 33, 135,
- 65, 105, 94, 16, 12, 9, 20, 23, 29, 30, 31, 35, 90, 41, 55, 59, 83, 34, 27, 56, 92, 97, 104, 43, 44, 42, 45, 87, 108, 93, 88, 26]'''
-
+JWR_IDS = [49, 100, 101, 103, 10, 111, 113, 114, 121, 122, 124, 126, 127, 128, 130, 131, 132, 134, 13, 17, 19, 21, 22, 24, 2, 32, 36, 37, 39, 46, 47, 48, 53, 54, 63, 64, 67, 68, 69, 70, 71, 72, 74, 75, 76, 7, 81, 82, 84, 85, 86, 91, 96, 98, 99, 136,78, 6, 33, 135, 65, 105, 94, 16, 12, 9, 20, 23, 29, 30, 31, 35, 90, 41, 55, 59, 83, 34, 27, 56, 92, 97, 104, 43, 44, 42, 45, 87, 108, 93, 88, 26]
 
 def makeFolder(folder_path):
     if os.path.exists(folder_path):
@@ -72,15 +69,15 @@ else:
         n_part +=1
 
 files_written = 0
-code_run_path = "/n/pfister_lab2/Lab/tfranzmeyer/ExpandComponent/"
+code_run_path = "/n/pfister_lab2/Lab/tfranzmeyer/JWR_raw/ExpandComponent/"
 run_hours = "4"
-slurm_path = "/n/pfister_lab2/Lab/tfranzmeyer/ExpandComponent/slurms/"
+slurm_path = "/n/pfister_lab2/Lab/tfranzmeyer/JWR_raw/ExpandComponent/slurms/"
 
-prefix = "Zebrafinch"
+prefix = "JWR"
 ID_MAX = 410
 
-error_path = "/n/pfister_lab2/Lab/tfranzmeyer/ExpandComponent/error_files/"
-output_path = "/n/pfister_lab2/Lab/tfranzmeyer/ExpandComponent/output_files/"
+error_path = "/n/pfister_lab2/Lab/tfranzmeyer/JWR_raw/ExpandComponent/error_files/"
+output_path = "/n/pfister_lab2/Lab/tfranzmeyer/JWR_raw/ExpandComponent/output_files/"
 template = template.replace('{RUNCODEDIRECTORY}', code_run_path)
 template = template.replace('{HOURS}', run_hours)
 memory = str(40000)
@@ -94,7 +91,7 @@ makeFolder(step01folderpath)
 makeFolder(step02folderpath)
 
 # write slurm for step two
-for ID in range(1,ID_MAX):
+for ID in JWR_IDS:
     command = "execute_step1.py" + " " + str(ID)
     jobname = "S1"+"_" +"ID_"+str(ID).zfill(6)
 

@@ -12,7 +12,7 @@
 #include <algorithm>
 #include <fstream>
 #include <stack>
-
+#include <math.h>
 void WriteHeaderSegID(FILE *fp, long &num, long &segID, long input_blocksize[3], long volumesize[3])
 {
   int check = 0;
@@ -86,9 +86,9 @@ void WritePointsOfSegment(const char *prefix, std::unordered_set<long> &points, 
     fclose(wfp);
   }
 
-  long n_blocks_z = floor((double)volumesize[OR_Z] / (double)input_blocksize[OR_Z]);
-  long n_blocks_y = floor((double)volumesize[OR_Y] / (double)input_blocksize[OR_Y]);
-  long n_blocks_x = floor((double)volumesize[OR_X] / (double)input_blocksize[OR_X]);
+  long n_blocks_z = ceil((double)volumesize[OR_Z] / (double)input_blocksize[OR_Z]);
+  long n_blocks_y = ceil((double)volumesize[OR_Y] / (double)input_blocksize[OR_Y]);
+  long n_blocks_x = ceil((double)volumesize[OR_X] / (double)input_blocksize[OR_X]);
 
   for (long bz=0; bz<n_blocks_z; bz++){
     for (long by=0; by<n_blocks_y; by++){
