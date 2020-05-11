@@ -48,11 +48,9 @@ for fname in filenames:
     bx_read = int(re.sub("[^0-9]", "", temp[-1]))
     ID_in_fname = int(temp[-4])
 
-    if bz_read != bz: continue
-    if by_read != by: continue
-    if bx_read != bx: continue
+    if bz_read != bz or by_read != by or by_read != by: continue
 
-    print("reading: " + str(fname))
+    # print("reading: " + str(fname))
 
     blocksize_read = [-1,-1,-1]
     volumesize_read = [-1,-1,-1]
@@ -64,7 +62,6 @@ for fname in filenames:
         volumesize_read[0], volumesize_read[1], volumesize_read[2], blocksize_read[0] = struct.unpack('qqqq', fd.read(32))
         blocksize_read[1], blocksize_read[2], ID_read, n_points = struct.unpack('qqqq', fd.read(32))
 
-        # print("Read n_points: " + str(n_points))
 
         assert (tuple(volumesize_read) == dataIO.Volumesize(prefix))
         assert (tuple(blocksize_read) == blocksize)
@@ -77,15 +74,6 @@ for fname in filenames:
 
         points_global = set(point_cloud_global)
         points_local = set(point_cloud_local)
-
-        # if checksum_read[0]!=(sum(points_local)+sum(points_global)):
-        #     print("ID is: " + str(ID_in_fname))
-        #     print("checksum read is: " + str(checksum_read[0]))
-        #     print("sum local is: " + str(sum(points_local)))
-        #     print("sum global is: " + str(sum(points_global)))
-        #     print("sum both is: "+ str((sum(points_local)+sum(points_global))))
-        #
-        #     raise ValueError("Checksum wrong")
 
         del points_global
         del point_cloud_global
@@ -103,7 +91,7 @@ for fname in filenames:
 
         labels_out[iz,iy,ix] = ID_read
 
-print("n_points for block: " + str(n_points_block))
+# print("n_points for block: " + str(n_points_block))
 
 filename_out = "JWR-labels_discarded-"+str(bz).zfill(4)+"z-"+str(by).zfill(4)+"y-"+str(bx).zfill(4)+"x"+".h5"
 dataIO.WriteH5File(labels_out, output_directory+filename_out, "main")
